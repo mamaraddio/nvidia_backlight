@@ -1,0 +1,36 @@
+#!/bin/env bash
+
+
+function notify() {
+    notify-send -t 1000 -h string:x-canonical-private-synchronous:sys-notify -u low \
+        -i "$IMAGE" \
+        "Backlight $ACTION" "Brightness : $(brightnessctl g)"
+}
+
+function handle() {
+
+    local ACTION="$1"
+    local QUANTITY="$2"
+    local IMAGE=${3:-$(find /usr/share/icons/ -type f -iname '*brightness*.svg' | head -1)}
+
+    case "$ACTION" in
+        up)
+            brightnessctl -q set +"$QUANTITY"
+            notify
+            ;;
+        down)
+            if [[ $(brightnessctl g) -ge 15 ]]; then
+                brightnessctl -q set "$QUANTITY"-
+                notify
+            else
+                :
+            fi
+            ;;
+        *)
+            :
+            ;;
+    esac
+}
+
+
+handle "$@"
