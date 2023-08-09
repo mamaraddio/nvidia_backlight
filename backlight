@@ -3,6 +3,9 @@
 function _help() {
     [[ $- != *i* ]] && return
     echo "Usage: $(basename $0) COMMAND VALUE [image]
+    
+    Simple script to manage cases in which when actual brightness value is set in a value between 0 and 10
+    the it seams to be multiplied with no reason leading to 10% be equals to 100% and 11% (the next step) is effectively dark.
 
 COMMANDS:
     up      Increase brightness level
@@ -37,12 +40,12 @@ function handle() {
 
     case "$ACTION" in
     up)
-        brightnessctl -q set +"$QUANTITY" 2&> /dev/null
+        brightnessctl -q set +"$QUANTITY"
         [[ $? -eq 0]]
         ;;
     down)
         if [[ $(brightnessctl g) -ge 15 ]]; then
-            brightnessctl -q set "$QUANTITY"- 2&> MESSAGE
+            brightnessctl -q set "$QUANTITY"-
         else
             :
         fi
