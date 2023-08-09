@@ -1,10 +1,32 @@
 #!/bin/env bash
 
+function _help() {
+    [[ $- != *i* ]] && return
+    echo "Usage: $(basename $0) COMMAND VALUE [image]
+
+COMMANDS:
+    up      Increase brightness level
+    down    Decrease brightness level
+    
+VALUE:
+    This value is parsed by brightnessctl, possible values are integers or perentage
+    
+    Example:
+        $(basename $0) up 10
+        $(basename $0) down 10%
+        
+IMAGE:
+    This represent the full path to the image to use in notifications, this is optional.
+    By default the first element containing the name \"brightness.svg\" enumerating /usr/share/icons/ is selected.
+    
+    Example:
+        $(basename $0) up 10 ~/.icons/my-brightness-icon.svg"
+}
 
 function notify() {
     notify-send -t 1000 -h string:x-canonical-private-synchronous:sys-notify -u low \
         -i "$IMAGE" \
-        "Backlight $ACTION" "Brightness : $(brightnessctl g)"
+        "Backlight $ACTION" ${MESSAGE:-"Brightness : $(brigttnessctl -g)"}
 }
 
 function handle() {
@@ -14,23 +36,21 @@ function handle() {
     local IMAGE=${3:-$(find /usr/share/icons/ -type f -iname '*brightness*.svg' | head -1)}
 
     case "$ACTION" in
-        up)
-            brightnessctl -q set +"$QUANTITY"
-            notify
-            ;;
-        down)
-            if [[ $(brightnessctl g) -ge 15 ]]; then
-                brightnessctl -q set "$QUANTITY"-
-                notify
-            else
-                :
-            fi
-            ;;
-        *)
+    up)
+        brightnessctl -q set +"$QUANTITY" 2&> /dev/null
+        [[ $? -eq 0]]
+        ;;
+    down)
+        if [[ $(brightnessctl g) -ge 15 ]]; then
+            brightnessctl -q set "$QUANTITY"- 2&> MESSAGE
+        else
             :
-            ;;
+        fi
+        ;;
+    *)
+        _help
+        ;;
     esac
 }
-
 
 handle "$@"
