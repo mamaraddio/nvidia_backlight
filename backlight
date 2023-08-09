@@ -1,8 +1,7 @@
 #!/bin/env bash
 
 function _help() {
-    [[ $- != *i* ]] && return
-    echo "Usage: $(basename $0) COMMAND VALUE [image]
+    echo "Usage: $(basename "$0") COMMAND VALUE [image]
     
     Simple script to manage cases in which when actual brightness value is set in a value between 0 and 10
     the it seams to be multiplied with no reason leading to 10% be equals to 100% and 11% (the next step) is effectively dark.
@@ -15,21 +14,21 @@ VALUE:
     This value is parsed by brightnessctl, possible values are integers or perentage
     
     Example:
-        $(basename $0) up 10
-        $(basename $0) down 10%
+        $(basename "$0") up 10
+        $(basename "$0") down 10%
         
 IMAGE:
     This represent the full path to the image to use in notifications, this is optional.
     By default the first element containing the name \"brightness.svg\" enumerating /usr/share/icons/ is selected.
     
     Example:
-        $(basename $0) up 10 ~/.icons/my-brightness-icon.svg"
+        $(basename "$0") up 10 ~/.icons/my-brightness-icon.svg"
 }
 
 function notify() {
     notify-send -t 1000 -h string:x-canonical-private-synchronous:sys-notify -u low \
         -i "$IMAGE" \
-        "Backlight $ACTION" ${MESSAGE:-"Brightness : $(brigttnessctl -g)"}
+        "Backlight $ACTION" "Brightness : $(brightnessctl g)"
 }
 
 function handle() {
@@ -41,11 +40,12 @@ function handle() {
     case "$ACTION" in
     up)
         brightnessctl -q set +"$QUANTITY"
-        [[ $? -eq 0]]
+        notify
         ;;
     down)
         if [[ $(brightnessctl g) -ge 15 ]]; then
             brightnessctl -q set "$QUANTITY"-
+            notify
         else
             :
         fi
