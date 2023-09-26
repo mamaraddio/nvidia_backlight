@@ -9,13 +9,20 @@ This is a bash script that wraps `brightnessctl` so the dependencies are:
 - notify-send -> you shold have installed - to receive a feedback of the action performed
 
 ## Usage
+To get the usage message just call it with no arguments
+```sh
+backlight
+```
+
+To increase brightness of 10 point
 ```sh
 backlight up 10
 ```
-or
+or using a percentage
 ```sh
-backlight up 10%
+backlight down 10%
 ```
+
 An optional image argument can be provided like so:
 ```sh
 backlight up 10 ~/.icons/my-brightness-icon.svg
