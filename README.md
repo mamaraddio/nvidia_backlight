@@ -28,3 +28,17 @@ An optional image argument can be provided like so:
 backlight up 10 ~/.icons/my-brightness-icon.svg
 ```
 If no image is provided it defaults to the first element containing the name "brightness.svg" enumerating `/usr/share/icons/` folder
+
+## Installation
+To install this script simply clone this repo and run make:
+```sh
+git clone https://github.com/mamaraddio/nvidia-backlight
+cd nvidia-backlight
+sudo make install
+```
+
+## Uninstall
+A `clean` recipe is provided with the `Makefile`. To uninstall you can run
+```sh
+sudo make clean
+```
